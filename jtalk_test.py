@@ -5,7 +5,7 @@ from datetime import datetime
 def jtalk(t):
     open_jtalk=['open_jtalk']
     mech=['-x','/usr/local/Cellar/open-jtalk/1.11/dic/install-mecab-ipadic-neologd']
-    htsvoice=['-m','/Users/life_mac_09/Desktop/test_voice/models/openjtalk_mei/mei_normal.htsvoice']
+    htsvoice=['-m','/Users/kobayashireiina/Documents/soundtest/soundtest/mei/mei_normal.htsvoice']
     speed=['-r','1.0']
     outwav=['-ow','open_jtalk.wav']
     cmd=open_jtalk+mech+htsvoice+speed+outwav
