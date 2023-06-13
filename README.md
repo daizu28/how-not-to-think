@@ -1,4 +1,4 @@
-# soundtest
+# How not to think_pythonを使った音声合成
 
 venv
 pythonのバージョン
