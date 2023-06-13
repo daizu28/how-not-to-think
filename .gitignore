@@ -1,0 +1,10 @@
+mecab-ipadic-neologd/
+bin/
+env/
+out/*
+
+# 音響モデル
+models/*
+
+# TouchDesigner related files
+*.toe
