@@ -1,14 +1,17 @@
 #coding: utf-8
+import argparse
 import csv
 import re
 import subprocess
 
-import MeCab as mecab
+# import MeCab as mecab
+
+mecab_dic_dir = "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
 
 class YomiParser:
     def __init__(self):
         self.eng_kana_dict = self.load_dict('dictionary/bep-eng.dic') | self.load_dict('dictionary/user.dic')
-        self.mecab_dict = "/usr/local/lib/mecab/dic/mecab-ipadic-neologd"
+        self.mecab_dict = mecab_dic_dir
         self.yomi_tagger = mecab.Tagger(f"-O yomi -d {self.mecab_dict}")
         self.match_alpha = re.compile(r'^[a-zA-Z0-9]+$')
 
@@ -36,7 +39,7 @@ class YomiParser:
 
 def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0):
     open_jtalk=['open_jtalk']
-    mech = ['-x', '/usr/local/lib/mecab/dic/mecab-ipadic-neologd']
+    mech = ['-x', mecab_dic_dir]
     htsvoice=['-m',htsvoice]
     speed=['-r',str(speed)]
     outwav=['-ow','out/open_jtalk.wav']
@@ -51,11 +54,16 @@ def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0):
     wr = subprocess.Popen(afplay)
 
 def main():
-    phrase="りんご"
+    parser = argparse.ArgumentParser(description='OpenJtalkで音声合成')
+    parser.add_argument('phrase', type=str, help='合成する音声のテキスト')
+    parser.add_argument('--htsvoice', type=str, default='./models/takumi/takumi_normal.htsvoice', help='HTS音響モデル')
+    parser.add_argument('--speed', type=float, default=1.0, help='話速')
+    args = parser.parse_args()
+
     yomi_parser = YomiParser()
-    phrase_yomi = yomi_parser.get_yomi(phrase)
+    phrase_yomi = yomi_parser.get_yomi(args.phrase)
     print(f"{phrase_yomi=}")
-    jtalk(phrase_yomi, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0)
+    jtalk(phrase_yomi, htsvoice=args.htsvoice, speed=args.speed)
 
 if __name__ == '__main__':
     main()
