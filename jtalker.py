@@ -4,7 +4,7 @@ import csv
 import re
 import subprocess
 
-# import MeCab as mecab
+import MeCab as mecab
 
 mecab_dic_dir = "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
 
