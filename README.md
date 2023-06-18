@@ -32,6 +32,9 @@ pip install --upgrade pip
 pipでrequirements.txtよりパッケージをインストール
 ```
 pip install -r requirements.txt
+
+# M1, M2 Macの場合
+pip install --no-binary :all: -r requirements.txt
 ```
 
 ## OpenJtalkを用意
@@ -62,9 +65,6 @@ jtalker.pyにインストール先を書き加える
 ```
 mecab_dic_dir = "mecab-ipadic-neologdのインストール先"
 ```
-
-## M1, M2 Macの場合に必要な作業
-WIP
 
 ## Python環境を閉じる
 作業が終わった際にvenvで作ったPython環境を閉じます
