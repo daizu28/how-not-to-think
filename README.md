@@ -128,7 +128,7 @@ pyenv activate venv_3.9
 python --version
 ```
 
-めかぶを入れる
+mecabを入れる
 ```
 pip install mecab
 ```
