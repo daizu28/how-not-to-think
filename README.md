@@ -93,3 +93,69 @@ python jtalker.py りんご --speed 0.5
 
 ## テストスクリプトの使い方
 WIP
+
+## TouchDesigner上でうまくいかないときに試してみること
+pyenvのインストール 下記をターミナルに入れる
+```
+curl -L https://github.com/yyuu/pyenv-installer/raw/master/bin/pyenv-installer | bash
+```
+remove〜って出たら~~~/.pyenvってのを消せって書いてると思うのでそれをパスの場所を辿って消す。または、
+```
+rm -rf /Users/〜〜〜/.pyenv
+```
+
+3.9.1のインストール
+```
+pyenv install 3.9.1
+```
+pyenvでエラーが出たら下記
+```
+eval "$(pyenv init -)"
+```
+
+3.9.1で仮想環境の作成
+```
+pyenv virtualenv 3.9.1 venv_3.9
+```
+
+仮想環境のActivate
+```
+pyenv activate venv_3.9
+```
+
+バージョンの確認　3.9.1じゃなかったらどこかおかしい
+```
+python --version
+```
+
+めかぶを入れる
+```
+pip install mecab
+```
+
+requirements.txtの中身をもう一度入れる
+pipでrequirements.txtよりパッケージをインストール
+```
+pip install -r requirements.txt
+
+# M1, M2 Macの場合
+pip install --no-binary :all: -r requirements.txt
+```
+
+作った仮想環境のパッケージ類がどこにあるか知りたいので、仮想環境のディレクトリを探す
+```
+python -m site
+```
+
+↓ターミナルの出力の中の一部
+```
+sys.path = [
+  '/Users/ユーザー名/Desktop/howtonotthink/enviroment',
+  '/Users/ユーザー名/.pyenv/versions/3.9.1/lib/python39.zip',
+  '/Users/ユーザー名/.pyenv/versions/3.9.1/lib/python3.9',
+  '/Users/ユーザー名/.pyenv/versions/3.9.1/lib/python3.9/lib-dynload',
+  '/Users/ユーザー名/.pyenv/versions/venv_3.9_1/lib/python3.9/site-packages',　←これがほしいのでここだけコピーする
+]
+```
+
+コピーしたものをTouchDesigner上のコード内のenv_pathに入れる
