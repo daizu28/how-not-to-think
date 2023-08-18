@@ -77,7 +77,7 @@ deactivate
 source env/bin/activate
 ```
 
-## 実行の仕方
+## （動作確認：jtalk.py単体での実行の仕方）
 ```
 python jtalker.py 合成したいテキスト
 
