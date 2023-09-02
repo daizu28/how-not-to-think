@@ -43,7 +43,10 @@ class YomiParser:
     def get_yomi(self, phrase):
         yomi = self.yomi_tagger.parse(phrase).strip()
         if phrase == yomi and self.match_alpha.match(phrase):
-            yomi = self.get_kana(phrase)
+            try:
+                yomi = self.get_kana(phrase)
+            except Exception as e:
+                yomi
         return yomi
 
 
@@ -101,4 +104,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
