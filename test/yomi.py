@@ -14,7 +14,9 @@ class TestFunc(unittest.TestCase):
             ["3.11","サンテンイチイチ"],
             ["8月3日","ハチガツミッカ"],
             ["python","パイソン"],
-            ["YCAM","ワイカム"]
+            ["YCAM","ワイカム"],
+            ["hello","ハロー"],
+            ["helllo","helllo"],
         ]
 
         for (phrase, expected) in phrase_arr:

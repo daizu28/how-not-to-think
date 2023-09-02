@@ -6,23 +6,26 @@ for path in [env_path, base_path]:
     if path not in sys.path:
         sys.path.insert(0, path)
 
-from jtalker import YomiParser
-from jtalker import jtalk
+from jtalker import JTalkWrapper
 
-yomi_parser = YomiParser(base_path)
+hts_path = f"{base_path}/models/takumi/takumi_normal.htsvoice"
+voice_speed = 0.2
+out_dir = f"{base_path}/out/"
+jtalk = JTalkWrapper(
+    hts_path=hts_path,
+    speed=voice_speed, 
+    out_dir=out_dir,
+    play=False,
+)
 
-# 音声合成完了時のコールバック
 def onSynthesized(path):
+    """ 
+    音声合成完了時のコールバック
+    引数:
+    path: 合成音声の保存先パス
+    """
     print("onSynthesized", path)
     mod("callback").run()
 
-# 音声合成
-def synthesize(input, callback):
-    phrase_yomi = yomi_parser.get_yomi(input)
-    hts_path = f"{base_path}/models/takumi/takumi_normal.htsvoice"
-    voice_speed = 0.2
-    out_path = f"{base_path}/out/{phrase_yomi}.wav"
-    jtalk(phrase_yomi, htsvoice=hts_path, speed=voice_speed, out=out_path, callback=callback)
-
 input = op('input_text').text
-synthesize(input, onSynthesized)
+jtalk.synthesize(input, callback=onSynthesized)

@@ -50,7 +50,7 @@ class YomiParser:
         return yomi
 
 
-def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0, out='./out/open_jtalk.wav', callback=None):
+def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0, out='./out/open_jtalk.wav'):
     input = ['echo', t.encode(), '|']
     open_jtalk=['/opt/homebrew/bin/open_jtalk']
     mech = ['-x', mecab_dic_dir]
@@ -64,7 +64,6 @@ def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0, out='
     # c.wait()
     subprocess.run(cmd, input=t, capture_output=True, text=True)
     removeSilence(out)
-    callback(out)
 
 def removeSilence(audio_path):
     rate, audio = read(audio_path)
@@ -92,15 +91,42 @@ def main():
     parser.add_argument('phrase', type=str, help='合成する音声のテキスト')
     parser.add_argument('--htsvoice', type=str, default='./models/takumi/takumi_normal.htsvoice', help='HTS音響モデル')
     parser.add_argument('--speed', type=float, default=1.0, help='話速')
-    # parser.add_argument('--out', type=str, default='out/open_jtalk.wav', help='出力ファイル名')
+    parser.add_argument('--outdir', type=str, default='out/', help='出力先ディレクトリ')
     args = parser.parse_args()
 
-    yomi_parser = YomiParser()
-    phrase_yomi = yomi_parser.get_yomi(args.phrase)
-    print(f"{phrase_yomi=}")
-    dirname = os.path.dirname(f"out/{phrase_yomi}.wav")
-    os.makedirs(dirname, exist_ok=True)
-    jtalk(phrase_yomi, htsvoice=args.htsvoice, speed=args.speed, out=f"out/{phrase_yomi}.wav", callback=play)
+    jtalk = JTalkWrapper(
+        hts_path=args.htsvoice,
+        speed=args.speed, 
+        out_dir=args.outdir,
+        play=True
+    )
+    jtalk.synthesize(input=args.phrase)
+
+
+class JTalkWrapper:
+    yomi_parser = None
+    hts_path = None
+    voice_speed = None
+    out_dir = None
+
+    def __init__(self, hts_path='./models/takumi/takumi_normal.htsvoice', speed=1.0, out_dir='./out/', play=False) -> None:
+        self.yomi_parser = YomiParser()
+        self.hts_path = hts_path
+        self.voice_speed = speed
+        self.out_dir = out_dir
+        os.makedirs(self.out_dir, exist_ok=True)
+        self.play = play
+    
+    def synthesize(self, input, callback=None):
+        phrase_yomi = self.yomi_parser.get_yomi(phrase=input)
+        out_path = f"{self.out_dir}/{phrase_yomi}.wav"
+        jtalk(phrase_yomi, htsvoice=self.hts_path, speed=self.voice_speed, out=out_path)
+
+        if self.play:
+            play(out_path)
+        
+        if callable(callback):
+            callback(out_path)
 
 if __name__ == '__main__':
     main()
