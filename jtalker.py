@@ -7,6 +7,11 @@ import subprocess
 
 import MeCab as mecab
 
+from pydub.silence import split_on_silence
+from pydub import AudioSegment
+from scipy.io.wavfile import read, write
+import numpy as np
+
 mecab_dic_dir = "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
 
 class YomiParser:
@@ -55,7 +60,24 @@ def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0, out='
     # c.stdin.close()
     # c.wait()
     subprocess.run(cmd, input=t, capture_output=True, text=True)
+    removeSilence(out)
     callback(out)
+
+def removeSilence(audio_path):
+    rate, audio = read(audio_path)
+    aud = AudioSegment(
+        audio.tobytes(),
+        frame_rate = rate,
+        sample_width = audio.dtype.itemsize,
+        channels = 1)
+    audio_chunks = split_on_silence(
+        aud,
+        min_silence_len = 1000,
+        silence_thresh = -45,
+        keep_silence = 500,)
+    audio_processed = sum(audio_chunks)
+    audio_processed = np.array(audio_processed.get_array_of_samples())
+    write(audio_path, rate, audio_processed)
 
 #  音源再生
 def play(out):
@@ -79,3 +101,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
