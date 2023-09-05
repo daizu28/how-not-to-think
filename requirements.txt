@@ -1,1 +1,4 @@
 mecab-python3==1.0.6
+numpy==1.25.2
+pydub==0.25.1
+scipy==1.11.2
