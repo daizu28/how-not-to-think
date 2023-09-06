@@ -10,3 +10,4 @@ models/*
 *.toe
 
 .DS_Store
+.python-version
