@@ -4,15 +4,15 @@ import csv
 import os
 import re
 import subprocess
-
+from subprocess import PIPE
 import MeCab as mecab
-
-from pydub.silence import split_on_silence
 from pydub import AudioSegment
+from pydub.silence import split_on_silence
 from scipy.io.wavfile import read, write
 import numpy as np
 
-mecab_dic_dir = "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
+getMecabDir = subprocess.run("echo `mecab-config --dicdir`\"/mecab-ipadic-neologd\"", shell=True, stdout=PIPE, stderr=PIPE, text=True)
+mecab_dic_dir = getMecabDir.stdout
 
 class YomiParser:
     def __init__(self, base_path = "."):
@@ -109,8 +109,8 @@ class JTalkWrapper:
     voice_speed = None
     out_dir = None
 
-    def __init__(self, hts_path='./models/takumi/takumi_normal.htsvoice', speed=1.0, out_dir='./out/', play=False) -> None:
-        self.yomi_parser = YomiParser()
+    def __init__(self, base_path = ".", hts_path='./models/takumi/takumi_normal.htsvoice', speed=1.0, out_dir='./out/', play=False) -> None:
+        self.yomi_parser = YomiParser(base_path)
         self.hts_path = hts_path
         self.voice_speed = speed
         self.out_dir = out_dir
@@ -119,7 +119,7 @@ class JTalkWrapper:
     
     def synthesize(self, input, callback=None):
         phrase_yomi = self.yomi_parser.get_yomi(phrase=input)
-        out_path = f"{self.out_dir}/{phrase_yomi}.wav"
+        out_path = f"{self.out_dir}{phrase_yomi}.wav"
         jtalk(phrase_yomi, htsvoice=self.hts_path, speed=self.voice_speed, out=out_path)
 
         if self.play:

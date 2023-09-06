@@ -8,3 +8,6 @@ models/*
 
 # TouchDesigner related files
 *.toe
+
+.DS_Store
+.python-version
