@@ -11,8 +11,9 @@ from pydub.silence import split_on_silence
 from scipy.io.wavfile import read, write
 import numpy as np
 
-getMecabDir = subprocess.run("echo `mecab-config --dicdir`\"/mecab-ipadic-neologd\"", shell=True, stdout=PIPE, stderr=PIPE, text=True)
-mecab_dic_dir = getMecabDir.stdout
+getMecabDir = subprocess.run(["mecab-config", "--dicdir"], stdout=PIPE, text=True)
+mecab_dic_dir = getMecabDir.stdout.replace("\n", "") + "/mecab-ipadic-neologd"
+# "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
 
 class YomiParser:
     def __init__(self, base_path = "."):
@@ -91,7 +92,7 @@ def main():
     parser.add_argument('phrase', type=str, help='合成する音声のテキスト')
     parser.add_argument('--htsvoice', type=str, default='./models/takumi/takumi_normal.htsvoice', help='HTS音響モデル')
     parser.add_argument('--speed', type=float, default=1.0, help='話速')
-    parser.add_argument('--outdir', type=str, default='out/', help='出力先ディレクトリ')
+    parser.add_argument('--outdir', type=str, default='./out/', help='出力先ディレクトリ')
     args = parser.parse_args()
 
     jtalk = JTalkWrapper(
@@ -119,7 +120,7 @@ class JTalkWrapper:
     
     def synthesize(self, input, callback=None):
         phrase_yomi = self.yomi_parser.get_yomi(phrase=input)
-        out_path = f"{self.out_dir}{phrase_yomi}.wav"
+        out_path = f"{self.out_dir}/{phrase_yomi}.wav"
         jtalk(phrase_yomi, htsvoice=self.hts_path, speed=self.voice_speed, out=out_path)
 
         if self.play:
