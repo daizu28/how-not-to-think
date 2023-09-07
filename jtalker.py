@@ -11,9 +11,16 @@ from pydub.silence import split_on_silence
 from scipy.io.wavfile import read, write
 import numpy as np
 
-getMecabDir = subprocess.run(["mecab-config", "--dicdir"], stdout=PIPE, text=True)
-mecab_dic_dir = getMecabDir.stdout.replace("\n", "") + "/mecab-ipadic-neologd"
+#getMecabDir = subprocess.run(["mecab-config", "--dicdir"], stdout=PIPE, text=True)
+#getMecabDir = '/opt/homebrew/lib/mecab/dic' 
+#mecab_dic_dir = getMecabDir.stdout.replace("\n", "") + "/mecab-ipadic-neologd"
+
 # "/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd"
+
+#getMecabDir = subprocess.run(["mecab-config", "--dicdir"], stdout=PIPE, text=True, shell=True)
+#mecab_dic_dir = getMecabDir.stdout.replace("\n", "") + "/mecab-ipadic-neologd"
+
+mecab_dic_dir ='/opt/homebrew/lib/mecab/dic/mecab-ipadic-neologd'
 
 class YomiParser:
     def __init__(self, base_path = "."):
