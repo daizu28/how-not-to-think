@@ -11,7 +11,9 @@ from jtalker import JTalkWrapper
 
 jtalk = JTalkWrapper(
 	base_path=base_path,
-    hts_path=f"{base_path}/models/takumi/takumi_normal.htsvoice",
+    model_path=f"{base_path}/models",
+    voice='takumi',
+    voice_mood='normal',
     speed=0.2, 
     out_dir=f"{base_path}/out/",
     play=False,

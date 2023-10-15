@@ -117,9 +117,35 @@ class JTalkWrapper:
     voice_speed = None
     out_dir = None
 
-    def __init__(self, base_path = ".", hts_path='./models/takumi/takumi_normal.htsvoice', speed=1.0, out_dir='./out/', play=False) -> None:
+    def __init__(self, base_path = ".", model_path='./models',voice='takumi', voice_mood='normal', hts_path='./models/takumi/takumi_normal.htsvoice', speed=1.0, out_dir='./out/', play=False) -> None:
+        hts_model_path=model_path
+        if voice=='takumi':
+            if voice_mood=='normal':
+                hts_model_path+='/takumi/takumi_normal.htsvoice'
+            elif voice_mood=='happy':
+                hts_model_path+='/takumi/takumi_happy.htsvoice'
+            elif voice_mood=='sad':
+                hts_model_path+='/takumi/takumi_sad.htsvoice'
+            elif voice_mood=='angry':
+                hts_model_path+='/takumi/takumi_angry.htsvoice'
+            else:
+                hts_model_path+='/takumi/takumi_normal.htsvoice'
+        elif voice=='mei':
+            if voice_mood=='normal':
+                hts_model_path+='/mei/mei_normal.htsvoice'
+            elif voice_mood=='happy':
+                hts_model_path+='/mei/mei_happy.htsvoice'
+            elif voice_mood=='sad':
+                hts_model_path+='/mei/mei_sad.htsvoice'
+            elif voice_mood=='angry':
+                hts_model_path+='/mei/mei_angry.htsvoice'
+            else:
+                hts_model_path+='/mei/mei_normal.htsvoice'
+        else:
+            hts_model_path=hts_path
+            
         self.yomi_parser = YomiParser(base_path)
-        self.hts_path = hts_path
+        self.hts_path = hts_model_path
         self.voice_speed = speed
         self.out_dir = out_dir
         os.makedirs(self.out_dir, exist_ok=True)
