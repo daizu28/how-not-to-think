@@ -1,4 +1,5 @@
 mecab==0.996.3
+num2words==0.5.13
 numpy==1.25.2
 pydub==0.25.1
 scipy==1.11.2

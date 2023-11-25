@@ -10,6 +10,7 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from scipy.io.wavfile import read, write
 import numpy as np
+from num2words import num2words
 
 #getMecabDir = subprocess.run(["mecab-config", "--dicdir"], stdout=PIPE, text=True)
 #getMecabDir = '/opt/homebrew/lib/mecab/dic' 
@@ -27,8 +28,9 @@ class YomiParser:
         self.base_path = base_path
         self.eng_kana_dict = self.load_dict(f"{self.base_path}/dictionary/bep-eng.dic") | self.load_dict(f"{self.base_path}/dictionary/user.dic")
         self.mecab_dict = mecab_dic_dir
-        self.yomi_tagger = mecab.Tagger(f"-O yomi -d {self.mecab_dict}")
-        self.match_alpha = re.compile(r'^[a-zA-Z0-9]+$')
+        self.tagger = mecab.Tagger(f"-d {self.mecab_dict}")
+        self.regex_alphabet = re.compile(r'^[a-zA-Z]+$')
+        self.regex_numeric = re.compile(r'^[0-9]+$')
 
     def load_dict(self, dict_file = 'user.dic'):
         dict = {}
@@ -46,17 +48,38 @@ class YomiParser:
         self.eng_kana_dict = dict
 
     def get_kana(self, eng):
+        if(not self.regex_alphabet.match(eng)):
+            return eng
         return self.eng_kana_dict[eng.upper()]
+        
+    def num_to_yomi(self, num):
+        if(not self.regex_numeric.match(num)):
+            return num
+        return num2words(num, lang='ja', reading=True)
 
     def get_yomi(self, phrase):
-        yomi = self.yomi_tagger.parse(phrase).strip()
-        if phrase == yomi and self.match_alpha.match(phrase):
-            try:
-                yomi = self.get_kana(phrase)
-            except Exception as e:
-                yomi
-        return yomi
-
+        yomi = ""
+        for line in self.tagger.parse(phrase).splitlines():
+            spl = line.split('\t')
+            word = spl[0]
+            if (word == "EOS"):
+                return yomi
+            
+            word_info = spl[1].split(',')
+            isNumeric = word_info[1] == "数"
+            word_yomi = word_info[-1]
+            has_yomi = word_yomi != "*"
+            if(has_yomi):
+                yomi += word_yomi
+            else:
+                if(isNumeric):
+                    yomi += self.num_to_yomi(word)
+                else:
+                    try:
+                        kana = self.get_kana(word)
+                        yomi += kana
+                    except Exception as e:
+                        yomi += word
 
 def jtalk(t, htsvoice='./models/takumi/takumi_normal.htsvoice', speed=1.0, out='./out/open_jtalk.wav'):
     input = ['echo', t.encode(), '|']
@@ -153,7 +176,7 @@ class JTalkWrapper:
     
     def synthesize(self, input, callback=None):
         phrase_yomi = self.yomi_parser.get_yomi(phrase=input)
-        out_path = f"{self.out_dir}/{phrase_yomi}.wav"
+        out_path = f"{self.out_dir}/{input}_{phrase_yomi}.wav"
         jtalk(phrase_yomi, htsvoice=self.hts_path, speed=self.voice_speed, out=out_path)
 
         if self.play:

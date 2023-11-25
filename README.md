@@ -62,7 +62,7 @@ pip install -r requirements.txt
 brew install open-jtalk mecab mecab-ipadic xz ffmpeg
 git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git
 cd mecab-ipadic-neologd
-./bin/install-mecab-ipadic-neologd -n
+./bin/install-mecab-ipadic-neologd -n -a
 cd ../
 ```
 途中`yes`と入力して進む
